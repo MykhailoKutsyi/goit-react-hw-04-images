@@ -1,7 +1,7 @@
 import SearchBar from './SearchBar';
 import ImageGallery from './ImageGallery';
 import Modal from './Modal';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import fetchImages from './HTTP/fetchImages';
 import Button from './Button';
@@ -17,25 +17,35 @@ export default function App() {
   const [link, setLink] = useState(null);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (!request) {
-      return;
-    }
+  // const updateData = newData => {
+  //   return (
+  //     setData([...data, ...newData.hits]),
+  //     setTotal(newData.total),
+  //     setStatus('resolved')
+  //   );
+  // };
+
+  const fetchAPI = useCallback(() => {
     fetchImages(request, page)
-      .then(updateData)
+      .then(newData => {
+        return (
+          setData([...data, ...newData.hits]),
+          setTotal(newData.total),
+          setStatus('resolved')
+        );
+      })
       .catch(error => {
         setError(error);
         setStatus('rejected');
       });
-  }, [request, page]);
+  }, [data, page, request]);
+  useEffect(() => {
+    if (!request) {
+      return;
+    }
 
-  const updateData = newData => {
-    return (
-      setData([...data, ...newData.hits]),
-      setTotal(newData.total),
-      setStatus('resolved')
-    );
-  };
+    fetchAPI();
+  }, [request, page, fetchAPI]);
 
   const onLoadMoreClick = () => {
     setStatus('pending');
