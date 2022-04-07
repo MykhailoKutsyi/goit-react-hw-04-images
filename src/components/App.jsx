@@ -21,12 +21,17 @@ export default function App() {
     if (!request) {
       return;
     }
-    fetchImages(request, page)
-      .then(updateData)
-      .catch(error => {
-        setError(error);
-        setStatus('rejected');
-      });
+    const fetchAPI = () => {
+      setStatus('pending');
+      fetchImages(request, page)
+        .then(() => updateData)
+        .catch(error => {
+          setError(error);
+          setStatus('rejected');
+        });
+    };
+
+    fetchAPI();
   }, [request, page]);
 
   const updateData = newData => {
