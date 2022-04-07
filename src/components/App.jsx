@@ -21,26 +21,19 @@ export default function App() {
     if (!request) {
       return;
     }
-    const fetchAPI = () => {
-      setStatus('pending');
-      fetchImages(request, page)
-        .then(() => updateData)
-        .catch(error => {
-          setError(error);
-          setStatus('rejected');
-        });
-    };
-
-    fetchAPI();
+    fetchImages(request, page)
+      .then(newData => {
+        return (
+          setData(prevData => [...prevData, ...newData.hits]),
+          setTotal(newData.total),
+          setStatus('resolved')
+        );
+      })
+      .catch(error => {
+        setError(error);
+        setStatus('rejected');
+      });
   }, [request, page]);
-
-  const updateData = newData => {
-    return (
-      setData([...data, ...newData.hits]),
-      setTotal(newData.total),
-      setStatus('resolved')
-    );
-  };
 
   const onLoadMoreClick = () => {
     setStatus('pending');
