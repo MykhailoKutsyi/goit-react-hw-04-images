@@ -1,11 +1,12 @@
-import SearchBar from './SearchBar';
-import ImageGallery from './ImageGallery';
-import Modal from './Modal';
 import { useState, useEffect } from 'react';
 
-import fetchImages from './HTTP/fetchImages';
-import Button from './Button';
-import Loader from './Loader';
+import SearchBar from './components/SearchBar';
+import ImageGallery from './components/ImageGallery';
+import Modal from './components/Modal';
+import Button from './components/Button';
+import Loader from './components/Loader';
+import fetchImages from './services/fetchImages';
+import Notification from './components/Notification';
 
 export default function App() {
   const [request, setRequest] = useState('');
@@ -13,7 +14,6 @@ export default function App() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [status, setStatus] = useState('idle');
-  const [showModal, setShowModal] = useState(false);
   const [link, setLink] = useState(null);
   const [error, setError] = useState(null);
 
@@ -21,10 +21,19 @@ export default function App() {
     if (!request) {
       return;
     }
+    setStatus('pending');
     fetchImages(request, page)
       .then(newData => {
         return (
-          setData(prevData => [...prevData, ...newData.hits]),
+          setData(prevData => [
+            ...prevData,
+            ...newData.hits.map(item => ({
+              id: item.id,
+              webLink: item.webformatURL,
+              link: item.largeImageURL,
+              tags: item.tags,
+            })),
+          ]),
           setTotal(newData.total),
           setStatus('resolved')
         );
@@ -36,23 +45,23 @@ export default function App() {
   }, [request, page]);
 
   const onLoadMoreClick = () => {
-    setStatus('pending');
     setPage(state => state + 1);
   };
 
   const addRequest = newRequest => {
     setData([]);
-    setRequest(newRequest);
     setPage(1);
+    setTotal(0);
+    setStatus('idle');
+    setRequest(newRequest);
   };
 
-  const toggleModal = () => {
-    setShowModal(!showModal);
-  };
-
-  const changeLink = newLink => {
-    toggleModal();
+  const addLink = newLink => {
     setLink(newLink);
+  };
+
+  const deleteLink = () => {
+    setLink(null);
   };
 
   return (
@@ -61,7 +70,7 @@ export default function App() {
 
       {status === 'idle' && <></>}
 
-      {data.length > 0 && <ImageGallery onSubmit={changeLink} data={data} />}
+      {data.length > 0 && <ImageGallery onSubmit={addLink} data={data} />}
 
       {status === 'rejected' && <>{error}</>}
 
@@ -71,7 +80,14 @@ export default function App() {
 
       {status === 'pending' && <Loader />}
 
-      {showModal && <Modal onClose={toggleModal} link={link} />}
+      {link && <Modal onClose={deleteLink} link={link} />}
+
+      <Notification
+        status={status}
+        dataLength={data.length}
+        total={total}
+        page={page}
+      />
     </>
   );
 }

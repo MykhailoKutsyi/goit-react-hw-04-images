@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { nanoid } from 'nanoid';
 import s from './Searchbar.module.css';
 import PropTypes from 'prop-types';
 
@@ -13,14 +12,7 @@ export default function SearchBar({ onSubmit }) {
   const handleSubmit = e => {
     e.preventDefault();
     onSubmit(request.toLowerCase());
-    reset();
   };
-
-  const reset = () => {
-    setRequest('');
-  };
-
-  const nameId = nanoid();
 
   return (
     <>
@@ -30,14 +22,13 @@ export default function SearchBar({ onSubmit }) {
             <span className={s.SearchFormButtonLabel}></span>
           </button>
 
-          <label htmlFor={nameId}>
+          <label>
             <input
               type="text"
               autoComplete="off"
               name="request"
               value={request}
               onChange={handleChange}
-              id={nameId}
               autoFocus
               placeholder="Search images and photos"
               className={s.SearchFormInput}

@@ -21,7 +21,14 @@ const ImageGallery = ({ data, onSubmit }) => {
 };
 
 ImageGallery.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      link: PropTypes.string.isRequired,
+      tags: PropTypes.string.isRequired,
+      webLink: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   onSubmit: PropTypes.func.isRequired,
 };
 
