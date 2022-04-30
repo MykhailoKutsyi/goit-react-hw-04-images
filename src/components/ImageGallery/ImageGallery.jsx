@@ -4,19 +4,17 @@ import PropTypes from 'prop-types';
 
 const ImageGallery = ({ data, onSubmit }) => {
   return (
-    <>
-      <ul
-        className={s.ImageGallery}
-        onClick={e =>
-          e.target.nodeName === 'IMG' &&
-          onSubmit(e.target.attributes.getNamedItem('data-link').value)
-        }
-      >
-        {data.map(item => (
-          <ImageGalleryItem item={item} key={item.id} />
-        ))}
-      </ul>
-    </>
+    <ul
+      className={s.ImageGallery}
+      onClick={e =>
+        e.target.nodeName === 'IMG' &&
+        onSubmit(e.target.attributes.getNamedItem('data-link').value)
+      }
+    >
+      {data.map(item => (
+        <ImageGalleryItem item={item} key={item.id} />
+      ))}
+    </ul>
   );
 };
 
