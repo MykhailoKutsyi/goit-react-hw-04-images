@@ -6,7 +6,7 @@ import Modal from './components/Modal';
 import Button from './components/Button';
 import Loader from './components/Loader';
 import fetchImages from './services/fetchImages';
-import Notification from './components/Notification';
+import useNotification from './hooks';
 
 export default function App() {
   const [request, setRequest] = useState('');
@@ -27,12 +27,14 @@ export default function App() {
         return (
           setData(prevData => [
             ...prevData,
-            ...newData.hits.map(item => ({
-              id: item.id,
-              webLink: item.webformatURL,
-              link: item.largeImageURL,
-              tags: item.tags,
-            })),
+            ...newData.hits.map(
+              ({ id, webformatURL, largeImageURL, tags }) => ({
+                id: id,
+                webLink: webformatURL,
+                link: largeImageURL,
+                tags: tags,
+              })
+            ),
           ]),
           setTotal(newData.total),
           setStatus('resolved')
@@ -64,6 +66,8 @@ export default function App() {
     setLink(null);
   };
 
+  useNotification(status, data.length, total, page);
+
   return (
     <>
       <SearchBar onSubmit={addRequest} />
@@ -81,13 +85,6 @@ export default function App() {
       {status === 'pending' && <Loader />}
 
       {link && <Modal onClose={deleteLink} link={link} />}
-
-      <Notification
-        status={status}
-        dataLength={data.length}
-        total={total}
-        page={page}
-      />
     </>
   );
 }

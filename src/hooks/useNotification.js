@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
-export default function Notification({ status, dataLength, total, page }) {
+export default function useNotification(status, dataLength, total, page) {
   useEffect(() => {
     status === 'resolved' &&
       page === 1 &&
